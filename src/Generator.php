@@ -27,6 +27,7 @@ class Generator
     protected $recent;
     protected $since;
     protected $after;
+    protected $before;
     protected $count = 0;
     protected $skips = 0;
     protected $warnings = 0;
@@ -36,7 +37,13 @@ class Generator
     {
         $this->app = $app;
         $this->files = $files;
-        $this->config = config('statamic.ssg');
+    }
+
+    public function before($before)
+    {
+        $this->before = $before;
+
+        return $this;
     }
 
     public function after($after)
@@ -48,6 +55,12 @@ class Generator
 
     public function generate($recent, $since)
     {
+        if ($this->before) {
+            call_user_func($this->before);
+        }
+
+        $this->config = config('statamic.ssg');
+
         Site::setCurrent(Site::default()->handle());
 
         $this
